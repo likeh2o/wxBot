@@ -4,22 +4,52 @@
 from wxbot import *
 import ConfigParser
 import json
+from urllib import quote
 
 
 class TulingWXBot(WXBot):
     def __init__(self):
         WXBot.__init__(self)
+	reload(sys)
+	sys.setdefaultencoding('utf-8')
+	print(sys.getdefaultencoding())
 
         self.tuling_key = ""
         self.robot_switch = True
+        self.access_token = ""
 
         try:
             cf = ConfigParser.ConfigParser()
             cf.read('conf.ini')
             self.tuling_key = cf.get('main', 'key')
+            cf.read('conf_baidu.ini')
+            self.access_token = cf.get('main', 'access_token')
         except Exception:
             pass
         print 'tuling_key:', self.tuling_key
+
+    def get_baidu_mp3(self, msg):
+	url = "http://tsn.baidu.com/text2audio"
+	print msg
+	fsock = open("voice_baidu/msg.txt", "w")
+	fsock.write(msg);
+	fsock.close()
+	
+	fsock = open("voice_baidu/msg.txt", "r")
+	msg_content = fsock.read();
+	fsock.close()
+
+	msg_encode = quote(msg_content)
+	print msg_encode
+	body = {'tex': msg_encode, 'lan': 'zh', 'cuid': 'xiaokele', 'ctp': '1', 'tok': self.access_token}
+	r = requests.get(url, params=body)
+
+	#write this file
+	fsock = open("voice_baidu/tts.mp3", "w")
+	fsock.write(r.content);
+	fsock.close()
+
+	print 'baidu mp3 ok'
 
     def tuling_auto_reply(self, uid, msg):
         if self.tuling_key:
@@ -31,7 +61,11 @@ class TulingWXBot(WXBot):
             result = ''
             if respond['code'] == 100000:
                 result = respond['text'].replace('<br>', '  ')
+		# 获取mp3 下面一行会转码，之后没法urlencode
+		self.get_baidu_mp3(result)
                 result = result.replace(u'\xa0', u' ')
+		# 播放音乐
+		os.system('mpg123 '+'voice_baidu/tts.mp3')
             elif respond['code'] == 200000:
                 result = respond['url']
             elif respond['code'] == 302000:
