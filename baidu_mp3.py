@@ -53,8 +53,9 @@ class Baidu:
 	url = "http://vop.baidu.com/server_api"
 	body = {'format': 'wav', 'rate': 8000, 'channel':1, 'cuid': 'xiaokele', 'token': self.access_token, 'lan': 'zh', 'speech': msg_base64, 'len':msg_len}
 	r = requests.post(url, data=json.dumps(body))
+	rj = json.loads(r.text);
 
-	print r.text
+	print rj['result'][0]
 
     def mp3_2_wav(self):
 	sound = AudioSegment.from_mp3("voice_baidu/tts.mp3")

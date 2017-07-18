@@ -5,6 +5,8 @@ from wxbot import *
 import ConfigParser
 import json
 from urllib import quote
+from pydub import AudioSegment ###需要安装pydub、ffmpeg
+import base64
 
 
 class TulingWXBot(WXBot):
@@ -51,7 +53,7 @@ class TulingWXBot(WXBot):
 
 	print 'baidu mp3 ok'
 
-    def tuling_auto_reply(self, uid, msg):
+    def tuling_auto_reply(self, uid, msg, msg_type = 'text'):
         if self.tuling_key:
             url = "http://www.tuling123.com/openapi/api"
             user_id = uid.replace('@', '')[:30]
@@ -61,11 +63,12 @@ class TulingWXBot(WXBot):
             result = ''
             if respond['code'] == 100000:
                 result = respond['text'].replace('<br>', '  ')
-		# 获取mp3 下面一行会转码，之后没法urlencode
-		self.get_baidu_mp3(result)
-                result = result.replace(u'\xa0', u' ')
-		# 播放音乐
-		os.system('mpg123 '+'voice_baidu/tts.mp3')
+		if msg_type == 'voice':
+			# 获取mp3 下面一行会转码，之后没法urlencode
+			self.get_baidu_mp3(result)
+			result = result.replace(u'\xa0', u' ')
+			# 播放音乐
+			os.system('mpg123 '+'voice_baidu/tts.mp3')
             elif respond['code'] == 200000:
                 result = respond['url']
             elif respond['code'] == 302000:
@@ -96,10 +99,31 @@ class TulingWXBot(WXBot):
                     self.robot_switch = True
                     self.send_msg_by_uid(u'[Robot]' + u'机器人已开启！', msg['to_user_id'])
 
+    def get_text_by_wav(self, msg_base64, msg_len):
+	url = "http://vop.baidu.com/server_api"
+	body = {'format': 'wav', 'rate': 8000, 'channel':1, 'cuid': 'xiaokele', 'token': self.access_token, 'lan': 'zh', 'speech': msg_base64, 'len':msg_len}
+	r = requests.post(url, data=json.dumps(body))
+	rj = json.loads(r.text)
+
+	return rj['result'][0]
+
     def handle_voice(self, msg):
-	# base64 处理
-	msg_base64 = '';
-	print msg
+	sound = AudioSegment.from_mp3(self.voice_path)
+	sound.export(self.voice_path + ".wav", format="wav")
+	fsock = open(self.voice_path + ".wav", "r")
+	msg_mp3 = fsock.read();
+	fsock.close()
+	msg_len = len(msg_mp3)
+	msg_base64 = base64.b64encode(msg_mp3)
+	# 调用百度接口识别声音
+	msg_baidu = self.get_text_by_wav(msg_base64, msg_len)
+
+	#write this file
+	fsock = open(self.voice_path + ".txt", "w")
+	fsock.write(msg_baidu)
+	fsock.close()
+
+	msg_tuling = self.tuling_auto_reply(msg['user']['id'], msg_baidu, 'voice')
 
     def handle_msg_all(self, msg):
 	print msg

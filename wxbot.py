@@ -84,6 +84,7 @@ class WXBot:
         self.sync_key_str = ''
         self.sync_key = []
         self.sync_host = ''
+        self.voice_path = ''
 
         status = 'wait4login'    #表示机器人状态，供WEBAPI读取，WxbotManage使用
         bot_conf = {} #机器人配置，在webapi初始化的时候传入，后续也可修改，WxbotManage使用
@@ -596,6 +597,7 @@ class WXBot:
             msg_content['voice'] = self.session.get(msg_content['data']).content.encode('hex')
             if self.DEBUG:
                 voice = self.get_voice(msg_id)
+		self.voice_path = 'temp/' + voice
                 print '    %s[Voice] %s' % (msg_prefix, voice)
         elif mtype == 37:
             msg_content['type'] = 37
