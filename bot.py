@@ -32,7 +32,7 @@ class TulingWXBot(WXBot):
 
     def get_baidu_mp3(self, msg):
 	url = "http://tsn.baidu.com/text2audio"
-	print msg
+
 	fsock = open("voice_baidu/msg.txt", "w")
 	fsock.write(msg);
 	fsock.close()
@@ -111,6 +111,7 @@ class TulingWXBot(WXBot):
 	sound = AudioSegment.from_mp3(self.voice_path)
 	sound.export(self.voice_path + ".wav", format="wav")
 	fsock = open(self.voice_path + ".wav", "r")
+	print self.voice_path + ".txt"
 	msg_mp3 = fsock.read();
 	fsock.close()
 	msg_len = len(msg_mp3)
@@ -126,7 +127,6 @@ class TulingWXBot(WXBot):
 	msg_tuling = self.tuling_auto_reply(msg['user']['id'], msg_baidu, 'voice')
 
     def handle_msg_all(self, msg):
-	print msg
         if not self.robot_switch and msg['msg_type_id'] != 1:
             return
         if msg['msg_type_id'] == 1 and msg['content']['type'] == 0:  # reply to self
