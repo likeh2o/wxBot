@@ -18,6 +18,7 @@ from urllib import quote
 from pydub import AudioSegment ###需要安装pydub、ffmpeg
 #import wave
 #import io
+import base64
 
 
 class Baidu:
@@ -47,29 +48,28 @@ class Baidu:
 
 	print 'ok'
 
+    def get_text_by_wav(self, msg_base64, msg_len):
+	print self.access_token
+	url = "http://vop.baidu.com/server_api"
+	body = {'format': 'wav', 'rate': 8000, 'channel':1, 'cuid': 'xiaokele', 'token': self.access_token, 'lan': 'zh', 'speech': msg_base64, 'len':msg_len}
+	r = requests.post(url, data=json.dumps(body))
+
+	print r.text
+
     def mp3_2_wav(self):
 	sound = AudioSegment.from_mp3("voice_baidu/tts.mp3")
-	sound.export("voice_baidu/tts.wav", format="wav")
+	sound.export("voice_baidu/tts.wav", format="wav") 
 
     def test(self):
-	fsock = open("voice_baidu/tts.mp3",'rb')
-	data=fsock.read()
-	fp.close()
-
-	#主要部分
-	aud=io.BytesIO(data)
-	sound=AudioSegment.from_file(aud,format='mp3')
-	raw_data = sound._data
-
-	#写入到文件，验证结果是否正确。
-	l=len(raw_data)
-	f=wave.open("voice_baidu/tts.wav",'wb')
-	f.setnchannels(1)
-	f.setsampwidth(2)
-	f.setframerate(16000)
-	f.setnframes(l)
-	f.writeframes(raw_data)
-	f.close()
+	#sound = AudioSegment.from_mp3("temp/voice_7282711500764964372.mp3")
+	#sound.export("temp/voice_7282711500764964372.wav", format="wav")
+	fsock = open("temp/voice_7282711500764964372.wav", "r")
+	msg = fsock.read();
+	fsock.close()
+	msg_len = len(msg)
+	msg_base64 = base64.b64encode(msg)
+	# 调用百度接口识别声音
+	self.get_text_by_wav(msg_base64, msg_len)
 
 def main():
 	bd = Baidu()
@@ -79,6 +79,7 @@ def main():
 	#msg = '媳妇儿真漂亮';
 	bd.get_mp3(msg)
 	bd.mp3_2_wav()
+	bd.test()
 
 
 if __name__ == '__main__':
