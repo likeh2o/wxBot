@@ -51,9 +51,9 @@ def stop(seconds):
 	GPIO.cleanup()
 
 if __name__ == "__main__":
-	back(2)
+	go(2)
+	left(2)
 	go(2)
 	right(2)
-	right(2)
-	go(2)
+	back(4)
 

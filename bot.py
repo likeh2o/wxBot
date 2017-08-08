@@ -7,7 +7,7 @@ import json
 from urllib import quote
 from pydub import AudioSegment ###需要安装pydub、ffmpeg
 import base64
-
+import L298N_car3
 
 class TulingWXBot(WXBot):
     def __init__(self):
@@ -52,6 +52,20 @@ class TulingWXBot(WXBot):
 	fsock.close()
 
 	print 'baidu mp3 ok'
+	
+    def car_go(self, msg):
+	command_go = "开车"
+	command_back = "倒车"
+	command_left = "左转弯"
+	command_right = "右转弯"
+	if msg.replace("，", "") == command_go:
+		L298N_car3.go(1)
+	if msg.replace("，", "") == command_back:
+		L298N_car3.back(1)
+	if msg.replace("，", "") == command_left:
+		L298N_car3.left(1)
+	if msg.replace("，", "") == command_right:
+		L298N_car3.right(1)
 
     def tuling_auto_reply(self, uid, msg, msg_type = 'text'):
         if self.tuling_key:
@@ -124,6 +138,9 @@ class TulingWXBot(WXBot):
 	fsock.write(msg_baidu)
 	fsock.close()
 
+	print msg_baidu
+	self.car_go(msg_baidu)
+
 	msg_tuling = self.tuling_auto_reply(msg['user']['id'], msg_baidu, 'voice')
 
     def handle_msg_all(self, msg):
@@ -132,6 +149,7 @@ class TulingWXBot(WXBot):
         if msg['msg_type_id'] == 1 and msg['content']['type'] == 0:  # reply to self
             self.auto_switch(msg)
         elif msg['msg_type_id'] == 4 and msg['content']['type'] == 0:  # text message from contact
+	    self.car_go(msg['content']['data'])
             self.send_msg_by_uid(self.tuling_auto_reply(msg['user']['id'], msg['content']['data']), msg['user']['id'])
         elif msg['msg_type_id'] == 4 and msg['content']['type'] == 4:  # voice 
             self.handle_voice(msg)
