@@ -59,9 +59,9 @@ class TulingWXBot(WXBot):
 	command_left = "左转弯"
 	command_right = "右转弯"
 	if msg.replace("，", "") == command_go:
-		L298N_car3.go(1)
+		L298N_car3.go(5)
 	if msg.replace("，", "") == command_back:
-		L298N_car3.back(1)
+		L298N_car3.back(5)
 	if msg.replace("，", "") == command_left:
 		L298N_car3.left(1)
 	if msg.replace("，", "") == command_right:

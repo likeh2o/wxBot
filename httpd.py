@@ -2,11 +2,10 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
 import cgi
-#import L298N_car3
+import L298N_car3
 
 PORT_NUMBER = 8080
 
-# 开车命令的频率多少合适呢？
 
 #This class will handles any incoming request from
 #the browser 
@@ -62,23 +61,25 @@ class myHandler(BaseHTTPRequestHandler):
             })
 
             command = form["command"].value
+            time_span = 0.3
+            time_span_min = 0.1
 
             if command == "forward":
-                #L298N_car3.go(0.5)
-                print "command is: %s" % command
+                L298N_car3.go(time_span)
+                #print "command is: %s" % command
             if command == "backward":
-                #L298N_car3.back(0.5)
-                print "command is: %s" % command
+                L298N_car3.back(time_span)
+                #print "command is: %s" % command
             if command == "left":
-                #L298N_car3.left(0.5)
-                print "command is: %s" % command
+                L298N_car3.left(time_span)
+                #print "command is: %s" % command
             if command == "right":
-                #L298N_car3.right(0.5)
-                print "command is: %s" % command
+                L298N_car3.right(time_span)
+                #print "command is: %s" % command
 
             self.send_response(200)
             self.end_headers()
-            self.wfile.write("Let's %s !" % command)
+            #self.wfile.write("Let's %s !" % command)
             return          
 
 try:

@@ -14,7 +14,7 @@ def init():
 	GPIO.setup(INT3,GPIO.OUT)
 	GPIO.setup(INT4,GPIO.OUT)
 
-def go(seconds):
+def back(seconds):
 	init()
 	GPIO.output(INT1,GPIO.HIGH)
 	GPIO.output(INT2,GPIO.LOW)
@@ -22,7 +22,7 @@ def go(seconds):
 	GPIO.output(INT4,GPIO.HIGH)
 	stop(seconds);
 
-def back(seconds):
+def go(seconds):
 	init()
 	GPIO.output(INT1,GPIO.LOW)
 	GPIO.output(INT2,GPIO.HIGH)
@@ -32,16 +32,16 @@ def back(seconds):
 
 def left(seconds):
 	init()
-	GPIO.output(INT1,GPIO.HIGH)
-	GPIO.output(INT2,GPIO.LOW)
+	GPIO.output(INT1,GPIO.LOW)
+	GPIO.output(INT2,GPIO.HIGH)
 	GPIO.output(INT3,False)
 	GPIO.output(INT4,False)
 	stop(seconds);
 
 def right(seconds):
 	init()
-	GPIO.output(INT1,GPIO.LOW)
-	GPIO.output(INT2,GPIO.HIGH)
+	GPIO.output(INT1,GPIO.HIGH)
+	GPIO.output(INT2,GPIO.LOW)
 	GPIO.output(INT3,False)
 	GPIO.output(INT4,False)
 	stop(seconds);
@@ -51,9 +51,9 @@ def stop(seconds):
 	GPIO.cleanup()
 
 if __name__ == "__main__":
-	go(2)
+	"""
+	go(1)
 	left(2)
-	go(2)
 	right(2)
-	back(4)
-
+	back(1)
+	"""

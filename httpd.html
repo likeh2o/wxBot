@@ -138,11 +138,13 @@ function postInfo(command){
     //objXMLHttp.send(null);
 
 }
+var time_span = 300;
 // 前进
 var forward_interval = null;
 function forwardTouchStart(){
     setInfo("start forward");
-    forward_interval = setInterval("postInfo('forward')", 500);
+    postInfo('forward');
+    forward_interval = setInterval("postInfo('forward')", time_span);
     //postInfo('forward');
 }
 function forwardTouchEnd(){
@@ -156,7 +158,8 @@ function forwardTouchMove(){
 var left_interval = null;
 function leftTouchStart(){
     setInfo("start left");
-    left_interval = setInterval("postInfo('left')", 500);
+    postInfo('left');
+    left_interval = setInterval("postInfo('left')", time_span);
 }
 function leftTouchEnd(){
     setInfo("end left");
@@ -166,7 +169,8 @@ function leftTouchEnd(){
 var right_interval = null;
 function rightTouchStart(){
     setInfo("start right");
-    right_interval = setInterval("postInfo('right')", 500);
+    postInfo('right');
+    right_interval = setInterval("postInfo('right')", time_span);
 }
 function rightTouchEnd(){
     setInfo("end right");
@@ -176,7 +180,8 @@ function rightTouchEnd(){
 var backward_interval = null;
 function backwardTouchStart(){
     setInfo("start backward");
-    backward_interval = setInterval("postInfo('backward')", 500);
+	postInfo('backward');
+    backward_interval = setInterval("postInfo('backward')", time_span);
 }
 function backwardTouchEnd(){
     setInfo("end backward");
