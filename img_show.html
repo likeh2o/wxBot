@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="format-detection" content="email=no" />
+    <title>图片展示</title>
+<style type="text/css">
+/*{{{ style*/
+body{margin:0;width:100%;}
+Html{font-size:62.5%(10/16*100%)}
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 1.5rem 3rem;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.8rem;
+}
+
+.command{
+    width:100%;
+    margin-bottom:1rem;
+    text-align:center;
+}
+
+.fix{
+    width:100%;
+    position:fixed;
+    bottom:0;
+}
+
+* {
+-webkit-touch-callout:none;
+-webkit-user-select:none;
+-khtml-user-select:none;
+-moz-user-select:none;
+-ms-user-select:none;
+user-select:none;
+}
+/*}}}*/
+</style> 
+
+<script type="text/javascript">
+/*{{{ ajax*/
+var objXMLHttp;
+/**
+ * 进行createXMLHttpRequest对象的创建，由于不同的浏览器厂商对于XMLHttpRequest的支持不一样，因此创建的时候需要根据不同的浏览器进行创建
+ * */
+function createXMLHttpRequest(){
+    //对于Firefox,Opera等遵守DOM 2规范的浏览器
+    if(window.XMLHttpRequest){
+        objXMLHttp = new XMLHttpRequest();
+    }
+    //对于IE浏览器
+    else{
+        //将IE浏览器不同的XMLHttp实现声明为数组
+        var MSXML = ['MSXML2.XMLHTTP.5.0', 'MSXML2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP', 'Microsoft.XMLHTTP'];
+        //依次对每个XMLHttp创建XMLHttpRequest对象
+        for(var i = 0; n< MSXML.length; i++){
+            try{
+                //微软发布的是ActiveX控件
+                objXMLHttp = new ActiveXObject(MSXML[i]);
+                //如果正常创建XMLHttpRequest对象就使用break跳出循环
+                break;
+            }catch(e){
+                setInfo("创建XMLHttpRequest对象失败");
+            }
+        }
+    }    
+}
+
+function processResponse(){
+    //响应完成且响应正常
+    if(objXMLHttp.readyState == 1){
+        //setInfo("XMLHttpRequest对象开始发送请求");
+    }else if(objXMLHttp.readyState == 2){
+        //setInfo("XMLHttpRequest对象的请求发送完成");
+    }else if(objXMLHttp.readyState == 3){
+        //setInfo("XMLHttpRequest对象开始读取服务器的响应");
+    }else if(objXMLHttp.readyState == 4){
+        //setInfo("XMLHttpRequest对象读取服务器响应结束");
+        if(objXMLHttp.status == 200){
+            //信息已经成功返回，开始处理信息
+            //先捕获下所有的请求头
+            //var headers = objXMLHttp.getAllResponseHeaders();
+            //setInfo("所有的请求头= "+headers);
+            //得到服务器返回的信息
+            var infor = objXMLHttp.responseText;
+            //setInfo("服务器端的响应 = "+infor);
+            setInfo(infor);
+        }else{
+            setInfo("所请求的服务器端出了问题");
+        }
+    }
+}
+
+function getSend(){
+    var value = document.getElementById("content").value;
+    //setInfo(value);
+    //初始化XMLHttpRequest对象
+    createXMLHttpRequest();
+    setInfo("创建成功");
+    //创建请求的URL,get方式采用url拼接参数
+    var url = "ajaxServlet?value="+value;
+    objXMLHttp.open("GET", url, true);
+    //设置处理响应的回调函数
+    objXMLHttp.onreadystatechange = processResponse;
+    objXMLHttp.send(null);
+}
+
+/*}}}*/
+
+function setInfo(info){
+    var info_div = document.getElementById("info_div");
+    //info_div.innerHTML = info_div.innerHTML + info + "<br/>";
+    info_div.innerHTML = info + "<br/>";
+	var img_show = document.getElementById("img_show");
+	var img_src = img_show.getAttribute("src");
+	var img_src_new = "/img/"+info;
+	if(img_src_new != img_src){
+		img_show.setAttribute("src", img_src_new);
+	}
+}
+
+function postInfo(command){
+    //setInfo("post command="+command);
+    //初始化XMLHttpRequest对象
+    createXMLHttpRequest();
+    //创建请求的URL
+    var url = "/img_now";
+    //var url = "/command?command="+command;
+    //打开与服务器的连接，使用post方式
+    objXMLHttp.open("POST", url, true);
+    //post方式需要设置请求消息头
+    objXMLHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //设置处理响应的回调函数
+    objXMLHttp.onreadystatechange = processResponse;
+    //发送请求并设置参数，参数的设置为param=value的形式
+    objXMLHttp.send("command="+command);
+    //objXMLHttp.send(null);
+
+}
+function getInfo(){
+    //初始化XMLHttpRequest对象
+    createXMLHttpRequest();
+    //创建请求的URL
+    var url = "/img_control.txt";
+    //打开与服务器的连接，使用post方式
+    objXMLHttp.open("GET", url, true);
+    //post方式需要设置请求消息头
+    objXMLHttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //设置处理响应的回调函数
+    objXMLHttp.onreadystatechange = processResponse;
+    //发送请求并设置参数，参数的设置为param=value的形式
+    objXMLHttp.send("");
+    //objXMLHttp.send(null);
+}
+
+var time_span = 500;
+// 前进
+var forward_interval = null;
+    forward_interval = setInterval("getInfo()", time_span);
+
+function forwardTouchEnd(){
+    setInfo("end forward");
+    window.clearInterval(forward_interval);
+}
+
+function clearInfo(){
+    var info_div = document.getElementById("info_div");
+    info_div.innerHTML = "";
+}
+
+</script>
+  </head>
+<body>
+<div id="info_div">
+
+</div>
+<div class="fix">
+	<img id="img_show" src="/img/1.png" />
+</div>
+</body>
+</html>

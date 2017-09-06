@@ -21,6 +21,9 @@ class myHandler(BaseHTTPRequestHandler):
             #set the right mime type
 
             sendReply = False
+            if self.path.endswith(".txt"):
+                mimetype='text/html'
+                sendReply = True
             if self.path.endswith(".html"):
                 mimetype='text/html'
                 sendReply = True
@@ -29,6 +32,9 @@ class myHandler(BaseHTTPRequestHandler):
                 sendReply = True
             if self.path.endswith(".gif"):
                 mimetype='image/gif'
+                sendReply = True
+            if self.path.endswith(".png"):
+                mimetype='image/png'
                 sendReply = True
             if self.path.endswith(".js"):
                 mimetype='application/javascript'
@@ -80,7 +86,25 @@ class myHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.end_headers()
             #self.wfile.write("Let's %s !" % command)
-            return          
+            return
+
+        if self.path=="/img_name":
+            form = cgi.FieldStorage(
+                fp=self.rfile, 
+                headers=self.headers,
+                environ={'REQUEST_METHOD':'POST',
+                         'CONTENT_TYPE':self.headers['Content-Type'],
+            })
+            name = form["name"].value
+
+            fsock = open("img_control.txt", "w")
+            fsock.write(name)
+            fsock.close()
+
+            self.send_response(200)
+            self.end_headers()
+            #self.wfile.write("Let's %s !" % command)
+            return
 
 try:
     #Create a web server and define the handler to manage the
