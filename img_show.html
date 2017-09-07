@@ -11,7 +11,7 @@
     <title>图片展示</title>
 <style type="text/css">
 /*{{{ style*/
-body{margin:0;width:100%;}
+body{margin:10px;width:100%;}
 Html{font-size:62.5%(10/16*100%)}
 .button {
     background-color: #4CAF50; /* Green */
@@ -32,8 +32,6 @@ Html{font-size:62.5%(10/16*100%)}
 
 .fix{
     width:100%;
-    position:fixed;
-    bottom:0;
 }
 
 * {
@@ -163,7 +161,7 @@ function getInfo(){
     //objXMLHttp.send(null);
 }
 
-var time_span = 500;
+var time_span = 1000;
 // 前进
 var forward_interval = null;
     forward_interval = setInterval("getInfo()", time_span);
@@ -185,7 +183,7 @@ function clearInfo(){
 
 </div>
 <div class="fix">
-	<img id="img_show" src="/img/1.png" />
+	<img id="img_show" src="" alt="图片show"/>
 </div>
 </body>
 </html>
