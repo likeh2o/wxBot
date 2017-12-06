@@ -1,0 +1,116 @@
+<!DOCTYPE html>  
+<meta charset="utf-8" />  
+<title>WebSocket Test</title>  
+<script src="http://static.innospace.cn/manager/lib/jquery.min.js?v=0.2.9"></script>
+<script language="javascript"type="text/javascript">  
+    // 天地伟业
+    //var wsUri ="ws://192.168.1.50:9000/?url=rtsp%3A%2F%2Fadmin%3Aadmin%40192.168.1.2%3A554"; 
+    //var wsUri ="ws://10.12.31.27:9000/?url=rtsp%3A%2F%2Fadmin%3Aadmin%40192.168.1.2%3A554"; 
+    var wsUri ="ws://10.11.12.50:9000/?url=rtsp%3A%2F%2Fadmin%3Aadmin%40192.168.1.2%3A554"; 
+    // face++
+    //var wsUri ="ws://192.168.1.50:9000/?url=rtsp%3A%2F%2F192.168.1.10%2Fuser%3Dadmin%26password%3D%26channel%3D1%26stream%3D0.sdp"; 
+    // face++
+    //var wsUri ="ws://10.11.12.50:9000/?url=rtsp%3A%2F%2F192.168.1.10%2Fuser%3Dadmin%26password%3D%26channel%3D1%26stream%3D0.sdp"; 
+    var output;  
+    
+    function init() { 
+        output = document.getElementById("output"); 
+        testWebSocket(); 
+    }  
+ 
+    function testWebSocket() { 
+        websocket = new WebSocket(wsUri); 
+        websocket.onopen = function(evt) { 
+            onOpen(evt) 
+        }; 
+        /*
+        websocket.onclose = function(evt) { 
+            onClose(evt) 
+        }; 
+        */
+        websocket.onmessage = function(evt) { 
+            onMessage(evt) 
+        }; 
+        websocket.onerror = function(evt) { 
+            onError(evt) 
+        }; 
+    }  
+ 
+    function onOpen(evt) { 
+        writeToScreen("CONNECTED"); 
+        doSend("WebSocket rocks"); 
+    }  
+ 
+    function onClose(evt) { 
+        writeToScreen("DISCONNECTED"); 
+    }  
+ 
+    function onMessage(evt) { 
+        //writeToScreen('<span style="color: blue;">RESPONSE: '+ evt.data+'</span>'); 
+
+        var data = jQuery.parseJSON(evt.data);
+        //var data = jQ.parseJSON('{"data": {"status": "recognizing"}}');
+        var face = "<img src='data:image/png;base64,"+data.data.face.image+"'/>";
+        face += "<div>person.id="+data.data.person.id+"</div>";
+        face += "<div>open_door="+data.data.open_door+"</div>";
+        face += "<div>status="+data.data.status+"</div>";
+        face += "<div>image.length="+data.data.face.image.length+"</div>";
+        //console.log(data.data.face.image.length);
+        $("#users").html(face);
+        // person.id = 36 zhou
+        // person.id = 45 like
+        // person.id = 15 chao
+        // person.id = 58 zhezhe
+        if(data.data.status=="recognized" 
+            && canIn(data.data.person.id) 
+            && data.data.face.image.length < 6000){
+            //console.log('eee');
+            $.get('http://innerdoor.cn/doors/opendoor/?door_ip=10.11.201.160');
+        }
+        if(data.data.status=="recognized"){
+            //sendPi(data.data.person.tag);
+        }
+        //websocket.close(); 
+    }  
+
+    function sendPi(tag){
+        var data = {"tag":tag};
+        $.post('http://10.16.1.75:8080/person', data, function(result){
+            $("#audio").attr("src", 'http://10.16.1.75:8000/person.mp3');
+            $("#audio")[0].play();
+        });
+    }
+
+    function canIn(id){
+        return true;
+        var persons = ["36", "45"];
+        var check = $.inArray(id, persons);
+        console.log(check);
+
+        return check == 1;
+    }
+ 
+    function onError(evt) { 
+        writeToScreen('<span style="color: red;">ERROR:</span> '+ evt.data); 
+    }  
+ 
+    function doSend(message) { 
+        writeToScreen("SENT: " + message);  
+        websocket.send(message); 
+    }  
+ 
+    function writeToScreen(message) { 
+        var pre = document.createElement("p"); 
+        pre.style.wordWrap = "break-word"; 
+        pre.innerHTML = message; 
+        output.appendChild(pre); 
+    }  
+ 
+    window.addEventListener("load", init, false);  
+</script>  
+<h2>WebSocket Test</h2>  
+<div id="output"></div>  
+<div id="users"></div>
+<audio id="audio" src="" autoplay="autoplay"></audio>  
+</html>
+

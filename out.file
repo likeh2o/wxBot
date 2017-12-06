@@ -1,13 +1,12 @@
 #!/usr/bin/python
-import os
+from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from os import curdir, sep
 import cgi
 import L298N_car3
 import ConfigParser
 import json 
 import requests
 import urllib
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-from os import curdir, sep
 from requests.exceptions import ConnectionError, ReadTimeout
 from urllib import quote
 
@@ -123,7 +122,11 @@ class myHandler(BaseHTTPRequestHandler):
             tag = form["tag"].value
             tagobj = json.loads(tag)
             #msg = tagobj['name'] + tagobj['description']
-            msg = tagobj['name'].encode('UTF-8') + tagobj['description'].encode('UTF-8')
+            msg = tagobj['name'] + tagobj['description']
+
+            fsock = open("person_tag.txt", "w")
+            fsock.write(msg)
+            fsock.close()
 
             cf = ConfigParser.ConfigParser()
             cf.read('conf_baidu.ini')
@@ -147,7 +150,6 @@ class myHandler(BaseHTTPRequestHandler):
             fsock.close()
 
             self.send_response(200)
-            self.send_header('Access-Control-Allow-Origin', "*")
             self.end_headers()
             self.wfile.write("write ok !")
             return

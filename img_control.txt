@@ -1,1 +1,1 @@
-send_msg.png
+group_chat.png

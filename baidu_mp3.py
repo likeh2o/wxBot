@@ -77,7 +77,7 @@ def main():
 	fsock = open("voice_baidu/msg.txt", "r")
 	msg = fsock.read();
 	fsock.close()
-	#msg = '媳妇儿真漂亮';
+	msg = '媳妇儿真漂亮';
 	bd.get_mp3(msg)
 	bd.mp3_2_wav()
 	bd.test()
