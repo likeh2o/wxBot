@@ -28,6 +28,9 @@ class myHandler(BaseHTTPRequestHandler):
             #set the right mime type
 
             sendReply = False
+            if self.path.endswith(".mp3"):
+                mimetype='audio/mpeg3'
+                sendReply = True
             if self.path.endswith(".txt"):
                 mimetype='text/html'
                 sendReply = True
